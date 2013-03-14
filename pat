@@ -75,7 +75,7 @@ status() {
 }
 
 PATRC=~/.config/patrc
-PAT=~/.local/bin/pat.py
+PAT=~/.local/share/pat/pat.py
 
 # Parse non-functional arguments first.
 for arg in $@; do
