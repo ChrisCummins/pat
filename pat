@@ -1,7 +1,5 @@
 #!/bin/bash
 
-test -n "$PAT_DEBUG" && set -x
-
 usage() {
     echo 'Usage: pat [--help] [--version] [--status] [--start]'
     echo '           [--stop | --kill]'
@@ -74,6 +72,7 @@ status() {
     exit 0
 }
 
+test -n "$PAT_DEBUG" && set -x
 PATRC=~/.config/patrc
 PAT=~/.local/share/pat/pat.py
 
