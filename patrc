@@ -1,4 +1,6 @@
-## patrc - configuration settings for the pat mail notification daemon
+# -*- mode: sh -*-
+
+## patrc - Configuration settings for the pat mail notification daemon.
 #
 # PAT_MAILDIR this is the directory containing your Maildir. This should be an
 # absolute pathname, as relative paths can cause incorrect configuration.
