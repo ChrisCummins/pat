@@ -18,10 +18,11 @@ start_pat() {
     if [ -f $LOCK ]; then
 	ps cax | grep $(cat $LOCK) &>/dev/null
 	if [ $? -eq 0 ]; then
-	    echo "unable to start, existing session ($(cat $LOCK | head -n1))" >&2
+	    echo -n "unable to start pat, existing session " >&2
+            echo "($(cat $LOCK | head -n1))" >&2
 	    exit 1
 	else
-	    echo "removing dead lock '$LOCK'"
+	    echo "removing oprhan lock ($(cat $LOCK))"
 	    rm -f $LOCK
 	fi
     fi
