@@ -15,3 +15,6 @@ uninstall:
 	rm -f ~/.local/bin/pat.py
 	rm -f ~/.local/share/cache
 	rm -f ~/bin/pat
+
+help:
+	@echo 'Usage: make <install | uninstall>'
