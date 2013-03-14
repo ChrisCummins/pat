@@ -104,9 +104,9 @@ else
     exit 1
 fi
 
-if [ -z $PAT_WORKING_DIR ]; then
-    echo "no working directory (PAT_WORKING_DIR)"
-    exit 1
+if [ ! -d $PAT_WORKING_DIR ]; then
+    mkdir -p $PAT_WORKING_DIR
+    echo "Created directory '$PAT_WORKING_DIR'"
 fi
 
 LOCK=$PAT_WORKING_DIR/lock
