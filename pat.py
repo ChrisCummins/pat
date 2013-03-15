@@ -42,7 +42,7 @@ def notify(title, message):
                   title, message,
                   [], {}, 10000)
 
-# Return the mail box name of the given message. If it is the top mailbox,
+# Return the name of the given message Maildir. If it is the base maildir,
 # return None.
 def get_message_dir(m):
     dir = os.path.dirname(os.path.dirname(m))
