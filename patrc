@@ -7,7 +7,7 @@
 export PAT_MAILDIR=~/mail
 
 # PAT_POLL_TIME this is the time between polling for new mail, in seconds.
-export PAT_POLL_TIME=20
+export PAT_POLL_TIME=60
 
 # PAT_WORKING_DIR this is the directory that pat places run time data in
 # to. Your user must have read and write permissions to this location.
