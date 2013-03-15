@@ -62,6 +62,7 @@ def notify_message(m):
             else:
                 dir = re.sub('^\.', '', os.path.split(dir)[-1])
                 notify('[' + dir + ']', sender)
+            return
 
 # Show a new messages notification.
 def notify_messages(M):
