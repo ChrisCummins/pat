@@ -105,6 +105,7 @@ def cache_mail_files(M):
     for m in M:
         f.write(str(m) + '\n')
     f.close()
+    os.chmod(CACHE, 0600) # Make sure we keep our 600 mod.
 
 def poll_maildir():
     B = []
