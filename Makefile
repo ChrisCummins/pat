@@ -7,7 +7,7 @@ install:
 	mkdir -p $(CONFIG_DIR)
 	mkdir -p $(SHARE_DIR)
 	install -m 755 pat $(BIN_DIR)/pat
-	install -m 755 patrc $(CONFIG_DIR)/patrc
+	install -m 644 patrc $(CONFIG_DIR)/patrc
 	install -m 755 pat.py $(SHARE_DIR)/pat.py
 	rm -f $(SHARE_DIR)/cache
 	touch $(SHARE_DIR)/cache
