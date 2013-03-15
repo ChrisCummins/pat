@@ -61,7 +61,7 @@ def notify_message(m):
                 notify('New mail', sender)
             else:
                 dir = re.sub('^\.', '', os.path.split(dir)[-1])
-                notify('New mail [' + dir + ']', sender)
+                notify('[' + dir + ']', sender)
 
 # Show a new messages notification.
 def notify_messages(M):
