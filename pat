@@ -2,7 +2,7 @@
 
 usage() {
     echo 'Usage: pat [--help] [--version] [--status] [--start]'
-    echo '           [--stop | --kill]'
+    echo '           [--stop | --kill] [--log]'
     echo ''
     echo 'Pat is an email notification daemon. It polls on a local Maildir'
     echo 'filesystem and displays desktop notifications when new mail has been'
@@ -73,6 +73,13 @@ status() {
     exit 0
 }
 
+log() {
+    if [ -f $PAT_WORKING_DIR/pat.log ]; then
+        less $PAT_WORKING_DIR/pat.log
+    fi
+    exit 0
+}
+
 test -n "$PAT_DEBUG" && set -x
 PATRC=~/.config/patrc
 PAT=~/.local/share/pat/pat.py
@@ -123,6 +130,9 @@ for arg in $@; do
 	    ;;
 	"--status")
 	    status
+	    ;;
+	"--log")
+	    log
 	    ;;
 	*)
 	    echo "unkown option '$arg'" >&2
