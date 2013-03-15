@@ -12,3 +12,7 @@ export PAT_POLL_TIME=60
 # PAT_WORKING_DIR this is the directory that pat places run time data in
 # to. Your user must have read and write permissions to this location.
 export PAT_WORKING_DIR=$HOME/.local/share/pat
+
+# PAT_LOG [optional]. If set, pat will use this file as a log. Do not set if
+# logging is not desired.
+export PAT_LOG=$PAT_WORKING_DIR/pat.log

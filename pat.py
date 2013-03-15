@@ -4,6 +4,7 @@
 
 from gi.repository import Gio
 from collections import Counter
+from time import gmtime, strftime
 import os
 import re
 import subprocess
@@ -13,7 +14,21 @@ import time
 WORKING_DIR = os.getenv('PAT_WORKING_DIR', '~/.local/share/pat')
 MAIL_DIR = os.getenv('PAT_MAILDIR', '~/Maildir')
 POLL_TIME = float(os.getenv('PAT_POLL_TIME', 120))
+LOG = os.getenv('PAT_LOG', None)
 CACHE = WORKING_DIR + '/cache'
+DEBUG = os.getenv('PAT_DEBUG', None)
+
+# Write a message to log.
+def log(message):
+    if (LOG != None):
+        f = open(LOG, 'a')
+        f.write('[' + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + '] '
+                + message + '\n')
+        f.close()
+
+def debug(message):
+    if (DEBUG != None):
+        log('[DEBUG] ' + message)
 
 # Send a desktop notification.
 def notify(title, message):
@@ -22,6 +37,7 @@ def notify(title, message):
                                     'org.freedesktop.Notifications',
                                     '/org/freedesktop/Notifications',
                                     'org.freedesktop.Notifications', None)
+    log(title + ': ' + message)
     notify.Notify('(susssasa{sv}i)', 'pat', 3, 'emblem-mail',
                   title, message,
                   [], {}, 10000)
@@ -102,6 +118,8 @@ def poll_maildir():
     notify_new_mail(strip_cached_mail(M))
     cache_mail_files(M)
 
+log('started session (' + str(os.getpid()) + ')')
 while True:
+    debug('polling \'' + MAIL_DIR + '\'')
     poll_maildir()
     time.sleep(POLL_TIME)
