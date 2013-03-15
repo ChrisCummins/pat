@@ -22,7 +22,6 @@ start_pat() {
             echo "($(cat $LOCK | head -n1))" >&2
 	    exit 1
 	else
-	    echo "removing oprhan lock ($(cat $LOCK))"
 	    rm -f $LOCK
 	fi
     fi
