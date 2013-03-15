@@ -110,7 +110,7 @@ def cache_mail_files(M):
 def poll_maildir():
     B = []
     M = []
-    p = subprocess.Popen(['find', MAIL_DIR, '-maxdepth', '1', '-type', 'd',
+    p = subprocess.Popen(['find', MAIL_DIR, '-type', 'd',
                           '-name', '*new'], stdout=subprocess.PIPE)
     for l in iter(p.stdout.readline, ''):
         B.append(l.rstrip())
