@@ -98,7 +98,7 @@ def strip_cached_mail(M):
         f.close
         return [x for x in M if x not in M_cache]
     except IOError:
-        return M_cache
+        return M
 
 def cache_mail_files(M):
     f = open(CACHE, 'w')
