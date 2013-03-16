@@ -32,9 +32,8 @@ def debug(message):
 
 # Send a desktop notification.
 def notify(title, message):
-    d = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-    notify = Gio.DBusProxy.new_sync(d, 0, None,
-                                    'org.freedesktop.Notifications',
+    notify = Gio.DBusProxy.new_sync(Gio.bus_get_sync(Gio.BusType.SESSION, None),
+                                    0, None, 'org.freedesktop.Notifications',
                                     '/org/freedesktop/Notifications',
                                     'org.freedesktop.Notifications', None)
     log(title + ': ' + message)
