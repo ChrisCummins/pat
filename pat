@@ -31,7 +31,7 @@ start_pat() {
 	chmod 600 $CACHE
     fi
 
-    $PAT &
+    python $PAT &
     pid=$!
     echo $pid > $LOCK
     echo "pat started ($pid)"
@@ -81,7 +81,7 @@ log() {
 
 test -n "$PAT_DEBUG" && set -x
 PATRC=~/.config/patrc
-PAT=~/.local/share/pat/pat.py
+PAT="$HOME/.local/share/pat/pat.py"
 
 # Parse non-functional arguments first.
 for arg in $@; do
