@@ -1,0 +1,5 @@
+		Readme for pat version @VERSION@
+
+Pat is a small mail notification client for desktop-integration-handicapped
+MUAs, e.g., mutt. By polling the local Maildir at periodic intervals, pat
+dispatches desktop notifications to notify when new mail arrives.

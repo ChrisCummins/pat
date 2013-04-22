@@ -80,8 +80,8 @@ log() {
 }
 
 test -n "$PAT_DEBUG" && set -x
-PATRC=~/.config/patrc
-PAT="$HOME/.local/share/pat/pat.py"
+PATRC="@PATRC@"
+PAT="@PAT_PY@"
 
 # Parse non-functional arguments first.
 for arg in $@; do
@@ -104,10 +104,10 @@ if [ ! -f $PAT ]; then
 fi
 
 if [ -f $PATRC ]; then
-    . $PATRC
+    . "$PATRC"
 else
-    echo "missing environment file '$PATRC'!"
-    exit 1
+    echo "warning: configuration file '@PATRC@' not found, using defaults" >&2
+    . "@DEFAULT_PATRC@"
 fi
 
 if [ ! -d $PAT_WORKING_DIR ]; then

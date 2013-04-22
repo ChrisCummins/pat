@@ -1,18 +1,18 @@
-# -*- mode: sh -*-
-
-## patrc - Configuration settings for the pat mail notification daemon.
 #
-# PAT_MAILDIR this is the directory containing your Maildir. This should be an
-# absolute pathname, as relative paths can cause incorrect configuration.
-export PAT_MAILDIR=~/mail
+#	patrc - Configuration settings for the pat mail notification daemon
+#
 
-# PAT_POLL_TIME this is the time between polling for new mail, in seconds.
+# PAT_MAILDIR this is the directory containing your Maildir. This should be an
+# absolute pathname, as relative paths can cause incorrect configuration
+export PAT_MAILDIR=$HOME/mail
+
+# The time between polling for new mail, in seconds
 export PAT_POLL_TIME=60
 
-# PAT_WORKING_DIR this is the directory that pat places run time data in
-# to. Your user must have read and write permissions to this location.
-export PAT_WORKING_DIR=$HOME/.local/share/pat
+# The directory that pat places run time data in to. You must have write
+# permissions to this location
+export PAT_WORKING_DIR=$HOME/.pat
 
-# PAT_LOG [optional]. If set, pat will use this file as a log. Do not set if
-# logging is not desired.
-export PAT_LOG=$PAT_WORKING_DIR/pat.log
+# [optional] If set, pat will use this file as a log. Do not set if logging is
+# not desired
+export PAT_LOG=$PAT_WORKING_DIR/log

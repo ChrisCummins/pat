@@ -14,7 +14,7 @@ import time
 jiffies = 0
 
 ## Environment variables and derivitives.
-WORKING_DIR = os.getenv('PAT_WORKING_DIR', '~/.local/share/pat')
+WORKING_DIR = os.getenv('PAT_WORKING_DIR', '~/.pat')
 MAIL_DIR = os.getenv('PAT_MAILDIR', '~/Maildir')
 POLL_TIME = float(os.getenv('PAT_POLL_TIME', 120))
 LOG = os.getenv('PAT_LOG', None)
