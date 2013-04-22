@@ -140,7 +140,6 @@ def cache_mail_files(M):
     for m in M:
         f.write(str(m) + '\n')
     f.close()
-    os.chmod(CACHE, 0600) # bMake sure we keep our 600 mod.
 
 # Perform a polling operation on the maildir and display a notification if
 # necessary.
@@ -157,6 +156,7 @@ def poll_maildir():
     cache_mail_files(M)
 
 
+os.chmod(CACHE, 0600)
 log('starting session (' + str(os.getpid()) + ')')
 while True:   # Main loop.
     debug('polling \'' + MAIL_DIR + '\'')
