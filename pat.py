@@ -10,6 +10,9 @@ import re
 import subprocess
 import time
 
+# Global tick counter
+jiffies = 0
+
 ## Environment variables and derivitives.
 WORKING_DIR = os.getenv('PAT_WORKING_DIR', '~/.local/share/pat')
 MAIL_DIR = os.getenv('PAT_MAILDIR', '~/Maildir')
@@ -34,7 +37,7 @@ def log(message):
 # @param message string.
 def debug(message):
     if (DEBUG != None):
-        log('[DEBUG] ' + message)
+        log('[DEBUG ' + jiffies + '] ' + message)
 
 # Show a desktop notification, in the form:
 #   <b><title></b> <title>
@@ -159,3 +162,4 @@ while True:   # Main loop.
     debug('polling \'' + MAIL_DIR + '\'')
     poll_maildir()
     time.sleep(POLL_TIME)
+    jiffies += 1
