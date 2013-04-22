@@ -97,7 +97,7 @@ for arg in $@; do
     esac
 done
 
-# Sanity checks and envrionment setup.
+# Sanity checks and environment setup.
 if [ ! -f $PAT ]; then
     echo "missing executable file '$PAT'!"
     exit 1
