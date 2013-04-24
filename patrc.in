@@ -3,17 +3,17 @@
 #
 
 # The directory containing your Maildir
-mail_directory='~/mail'
+mail_directory = '@DEFAULT_MAIL_DIRECTORY@'
 
 # A list of directories to exclude. No notifications will be dispatched for new
 # mail in these directories
-excludes = [ '.Sent', '.Spam', '.Drafts' ]
+excludes = [ @DEFAULT_EXCLUDES@ ]
 
 # The directory that pat places run time data in to
-working_directory='~/.pat'
+working_directory = '@DEFAULT_WORKING_DIRECTORY@'
 
 # The time between polling for new mail, in seconds
-poll_time=60
+poll_time = @DEFAULT_POLLING_TIME@
 
 # If set, pat will create a log file
-use_log = True
+use_log = @DEFAULT_USE_LOG@

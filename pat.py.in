@@ -114,19 +114,22 @@ def get_pat_context ():
 	try:
 		mail_directory
 	except NameError:
-		warn('undefined mail directory, using default \'~/Maildir\'')
-		mail_directory = '~/Maildir'
+		warn('undefined mail directory, using default '
+			 + '\'@DEFAULT_MAIL_DIRECTORY@\'')
+		mail_directory = '@DEFAULT_MAIL_DIRECTORY@'
 
 	try:
 		excludes
 	except NameError:
+		# we don't use any excludes if none are specified
 		excludes = [ '' ]
 
 	try:
 		working_directory
 	except NameError:
-		warn('undefined working directory, using default \'~/.@PACKAGE@\'')
-		working_directory = '~/.@PACKAGE@'
+		warn('undefined working directory, using default '
+			 + '\'@DEFAULT_WORKING_DIRECTORY@\'')
+		working_directory = '@DEFAULT_WORKING_DIRECTORY@'
 
 	try:
 		poll_time
