@@ -2,7 +2,7 @@ AC_PREREQ([2.69])
 
 m4_define([pat_major_version], [0])
 m4_define([pat_minor_version], [0])
-m4_define([pat_micro_version], [1])
+m4_define([pat_micro_version], [2])
 m4_define([pat_version],
           [pat_major_version.pat_minor_version.pat_micro_version])
 
@@ -47,6 +47,6 @@ AM_PATH_PYTHON([2.5])
 
 AC_OUTPUT([
 	Makefile
-	pat.sh
+	pat.py
 	README
 ])

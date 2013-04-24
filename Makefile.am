@@ -6,10 +6,10 @@ bin_SCRIPTS = pat
 CLEANFILES = $(bin_SCRIPTS)
 
 patsharedir = $(datadir)/@PACKAGE@
-patshare_DATA = pat.py patrc
+patshare_DATA = patrc
 
-%: %.sh
-	install $< $@
+%: %.py
+	$(INSTALL) $< $@
 
 docdir = $(datadir)/doc/@PACKAGE@
 doc_DATA = README
@@ -23,11 +23,10 @@ EXTRA_DIST = autogen.sh patrc
 install-data-local:
 	$(INSTALL) --mode=644 --owner=$(user) --group=$(user) patrc --no-target-directory $(userhomedir)/.patrc
 	$(MKDIR_P) $(userdatadir)
-	echo -n '' > lock
 	echo -n '' > cache
 	echo -n '' > log
-	$(INSTALL) --mode=600 --owner=$(user) --group=$(user) lock cache --target-directory=$(userdatadir)
-	rm -f lock cache log
+	$(INSTALL) --mode=600 --owner=$(user) --group=$(user) cache log --target-directory=$(userdatadir)
+	rm -f cache log
 
 uninstall-local:
 	rm -f $(userhomedir)/.patrc
