@@ -9,8 +9,7 @@ mail_directory='~/mail'
 working_directory='~/.pat'
 
 # The time between polling for new mail, in seconds
-# FIXME:
-poll_time=10
+poll_time=60
 
 # If set, pat will create a log file
 use_log = True
