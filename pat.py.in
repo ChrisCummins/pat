@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-#           @PACKAGE@ - @VERSION@
+#			@PACKAGE@ - @VERSION@
 #
 # Copyright (c) 2013 Chris Cummins
 #
@@ -34,387 +34,387 @@ import sys
 import time
 
 class PatContext:
-    # internal state information
-    pid = 0
-    jiffies = 0
+	# internal state information
+	pid = 0
+	jiffies = 0
 
-    # directory paths
-    md = ''
-    wd = ''
-    excludes = [ '' ]
+	# directory paths
+	md = ''
+	wd = ''
+	excludes = [ '' ]
 
-    # file paths
-    cache = ''
-    lock = ''
-    log = ''
+	# file paths
+	cache = ''
+	lock = ''
+	log = ''
 
-    poll_time = 0.0
+	poll_time = 0.0
 
 # Write a message to log log file. Entries in the log file appear in the form:
-#   [yyyy-mm-dd hh:mm:ss] <message>
+#	[yyyy-mm-dd hh:mm:ss] <message>
 def log(logp, message):
   if logp != None:
-    f = open(logp, 'a')
-    f.write('[' + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + '] '
-            + message + '\n')
-    f.close()
+	f = open(logp, 'a')
+	f.write('[' + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + '] '
+			+ message + '\n')
+	f.close()
 
 # Write a debugging message to log file if PAT_DEBUG envrionment variable is
 # set. Debugging entires appear in the log as:
-#   [yyyy-mm-dd hh:mm:ss] [DEBUG] <message>
+#	[yyyy-mm-dd hh:mm:ss] [DEBUG] <message>
 def debug(logp, message):
-    if (os.getenv('PAT_DEBUG', None)):
-        log(logp, '[DEBUG] ' + message)
+	if (os.getenv('PAT_DEBUG', None)):
+		log(logp, '[DEBUG] ' + message)
 
 # Print and log a message
 def broadcast(logp, message):
-    log(logp, message)
-    print message
+	log(logp, message)
+	print message
 
 def warn(message):
-    print 'warning: ' + message
+	print 'warning: ' + message
 
 def fatal(message):
-    print 'fatal: ' + message
-    sys.exit(1)
+	print 'fatal: ' + message
+	sys.exit(1)
 
 # Expands a path
 def getpath(path):
-    return os.path.expandvars(os.path.expanduser(path))
+	return os.path.expandvars(os.path.expanduser(path))
 
 # Create a file, if it doesn't already exist
 def create(path):
-    if os.path.exists(path) != True:
-        open(path, 'w').close()
+	if os.path.exists(path) != True:
+		open(path, 'w').close()
 
 # Get the global configuration variables and return as a PatContext
 def get_pat_context ():
-    global mail_directory
-    global working_directory
-    global poll_time
-    global use_log
-    global excludes
+	global mail_directory
+	global working_directory
+	global poll_time
+	global use_log
+	global excludes
 
-    patrc = '@PATRC@'
+	patrc = '@PATRC@'
 
-    try:
-        with open(patrc): pass
-    except IOError:
-        patrc = '@DEFAULT_PATRC@'
-        try:
-            open(patrc)
-            warn('configuration file \'' + patrc + '\' not found, using '
-                 + 'defaults')
-        except IOError:
-            fatal('failed to load configuration file \'' + patrc + '\'')
+	try:
+		with open(patrc): pass
+	except IOError:
+		patrc = '@DEFAULT_PATRC@'
+		try:
+			open(patrc)
+			warn('configuration file \'' + patrc + '\' not found, using '
+				 + 'defaults')
+		except IOError:
+			fatal('failed to load configuration file \'' + patrc + '\'')
 
-    execfile(patrc, globals())
+	execfile(patrc, globals())
 
-    # Verify the configuration variables
-    try:
-        mail_directory
-    except NameError:
-        warn('undefined mail directory, using default \'~/Maildir\'')
-        mail_directory = '~/Maildir'
+	# Verify the configuration variables
+	try:
+		mail_directory
+	except NameError:
+		warn('undefined mail directory, using default \'~/Maildir\'')
+		mail_directory = '~/Maildir'
 
-    try:
-        excludes
-    except NameError:
-        excludes = [ '' ]
+	try:
+		excludes
+	except NameError:
+		excludes = [ '' ]
 
-    try:
-        working_directory
-    except NameError:
-        warn('undefined working directory, using default \'~/.@PACKAGE@\'')
-        working_directory = '~/.@PACKAGE@'
+	try:
+		working_directory
+	except NameError:
+		warn('undefined working directory, using default \'~/.@PACKAGE@\'')
+		working_directory = '~/.@PACKAGE@'
 
-    try:
-        poll_time
-    except NameError:
-        poll_time = 60
+	try:
+		poll_time
+	except NameError:
+		poll_time = 60
 
-    try:
-        use_log
-    except NameError:
-        use_log = False
+	try:
+		use_log
+	except NameError:
+		use_log = False
 
-    # Instantiate the context
-    ctx = PatContext()
-    ctx.pid = os.getpid()
-    ctx.md = getpath(mail_directory)
-    ctx.wd = getpath(working_directory)
-    ctx.excludes = [ctx.md + '/' + x + '/new' for x in excludes]
-    ctx.cache = ctx.wd + '/cache'
-    ctx.lock = ctx.wd + '/lock'
-    if use_log == True:
-        ctx.log = ctx.wd + '/log'
-    ctx.poll_time = float(poll_time)
+	# Instantiate the context
+	ctx = PatContext()
+	ctx.pid = os.getpid()
+	ctx.md = getpath(mail_directory)
+	ctx.wd = getpath(working_directory)
+	ctx.excludes = [ctx.md + '/' + x + '/new' for x in excludes]
+	ctx.cache = ctx.wd + '/cache'
+	ctx.lock = ctx.wd + '/lock'
+	if use_log == True:
+		ctx.log = ctx.wd + '/log'
+	ctx.poll_time = float(poll_time)
 
-    # make sure we have a working directory
-    if os.path.isdir(ctx.wd) != True:
-        os.makedirs(ctx.wd)
-        debug(ctx.log, 'created working directory \'' + ctx.wd + '\'')
+	# make sure we have a working directory
+	if os.path.isdir(ctx.wd) != True:
+		os.makedirs(ctx.wd)
+		debug(ctx.log, 'created working directory \'' + ctx.wd + '\'')
 
-    create(ctx.cache)
-    create(ctx.log)
+	create(ctx.cache)
+	create(ctx.log)
 
-    debug(ctx.log, 'forked worker process (' + str(ctx.pid) + ')')
-    debug(ctx.log, 'using configuration file \'' + patrc + '\'')
-    debug(ctx.log, 'mail directory: \'' + ctx.md + '\'')
-    debug(ctx.log, 'excludes: \'' + '\', \''.join(excludes) + '\'')
-    debug(ctx.log, 'working directory: \'' + ctx.wd + '\'')
-    debug(ctx.log, 'cache file: \'' + ctx.cache + '\'')
-    debug(ctx.log, 'lock file: \'' + ctx.lock + '\'')
-    debug(ctx.log, 'log file: \'' + ctx.log + '\'')
-    debug(ctx.log, 'poll time: ' + str(int(ctx.poll_time)))
+	debug(ctx.log, 'forked worker process (' + str(ctx.pid) + ')')
+	debug(ctx.log, 'using configuration file \'' + patrc + '\'')
+	debug(ctx.log, 'mail directory: \'' + ctx.md + '\'')
+	debug(ctx.log, 'excludes: \'' + '\', \''.join(excludes) + '\'')
+	debug(ctx.log, 'working directory: \'' + ctx.wd + '\'')
+	debug(ctx.log, 'cache file: \'' + ctx.cache + '\'')
+	debug(ctx.log, 'lock file: \'' + ctx.lock + '\'')
+	debug(ctx.log, 'log file: \'' + ctx.log + '\'')
+	debug(ctx.log, 'poll time: ' + str(int(ctx.poll_time)))
 
-    return ctx
+	return ctx
 
 # Show a desktop notification, in the form:
-#   <b><title></b> <title>
+#	<b><title></b> <title>
 def notify(ctx, title, message):
-    notify = Gio.DBusProxy.new_sync(Gio.bus_get_sync(Gio.BusType.SESSION, None),
-                                    0, None, 'org.freedesktop.Notifications',
-                                    '/org/freedesktop/Notifications',
-                                    'org.freedesktop.Notifications', None)
-    log(ctx.log, title + ': ' + message)
-    notify.Notify('(susssasa{sv}i)', 'pat', 3, 'emblem-mail',
-                  title, message,
-                  [], {}, 10000)
+	notify = Gio.DBusProxy.new_sync(Gio.bus_get_sync(Gio.BusType.SESSION, None),
+									0, None, 'org.freedesktop.Notifications',
+									'/org/freedesktop/Notifications',
+									'org.freedesktop.Notifications', None)
+	log(ctx.log, title + ': ' + message)
+	notify.Notify('(susssasa{sv}i)', 'pat', 3, 'emblem-mail',
+				  title, message,
+				  [], {}, 10000)
 
 # Get the name of the given message Maildir. If it is the base maildir,
 # return None
 def get_message_dir(m, base):
-    dir = os.path.dirname(os.path.dirname(m))
-    if dir == base:
-        return None
-    else:
-        return re.sub('^\.', '', os.path.split(dir)[-1])
+	dir = os.path.dirname(os.path.dirname(m))
+	if dir == base:
+		return None
+	else:
+		return re.sub('^\.', '', os.path.split(dir)[-1])
 
 # Show a new message notification for a given path to mail
 def notify_message(ctx, m):
-    for l in open(m):
-        if re.search('^From:\s+', l, flags=re.IGNORECASE):
-            sender = re.sub('^From:\s+', '', l, flags=re.IGNORECASE).strip()
-            dir = os.path.dirname(os.path.dirname(m))
-            if dir == ctx.md:
-                notify(ctx, 'New mail', sender)
-            else:
-                dir = re.sub('^\.', '', os.path.split(dir)[-1])
-                notify(ctx, '[' + dir + ']', sender)
-            return
+	for l in open(m):
+		if re.search('^From:\s+', l, flags=re.IGNORECASE):
+			sender = re.sub('^From:\s+', '', l, flags=re.IGNORECASE).strip()
+			dir = os.path.dirname(os.path.dirname(m))
+			if dir == ctx.md:
+				notify(ctx, 'New mail', sender)
+			else:
+				dir = re.sub('^\.', '', os.path.split(dir)[-1])
+				notify(ctx, '[' + dir + ']', sender)
+			return
 
 # Show a new messages notification from a list of paths to messages in the
 # format:
-#   New mail (<num) : <box1> (<count>), <box2> (<count)...
+#	New mail (<num) : <box1> (<count>), <box2> (<count)...
 def notify_messages(ctx, M):
-    D = Counter([get_message_dir(x, ctx.md) for x in M]).most_common(3)
-    summary = ''
-    for d in D:
-        if d[0] == None:
-            summary += 'Inbox (' + str(d[1]) + '), '
-        else:
-            summary += d[0] + ' (' + str(d[1]) + '), '
-    summary = summary[:-2]
-    if len(D) < len(M):
-        summary += '...'
-    notify(ctx, 'New mail (' + str(len(M)) + ')', summary)
+	D = Counter([get_message_dir(x, ctx.md) for x in M]).most_common(3)
+	summary = ''
+	for d in D:
+		if d[0] == None:
+			summary += 'Inbox (' + str(d[1]) + '), '
+		else:
+			summary += d[0] + ' (' + str(d[1]) + '), '
+	summary = summary[:-2]
+	if len(D) < len(M):
+		summary += '...'
+	notify(ctx, 'New mail (' + str(len(M)) + ')', summary)
 
 # Send desktop notification for new mail for a list of paths to messages
 def notify_new_mail(ctx, M):
-    if len(M) == 1:
-        notify_message(ctx, M[0])
-    elif len(M) >= 2:
-        notify_messages(ctx, M)
+	if len(M) == 1:
+		notify_message(ctx, M[0])
+	elif len(M) >= 2:
+		notify_messages(ctx, M)
 
 # Get the contents of a directory as a list of file paths
 def files_in_dir(d):
-    f = []
-    p = subprocess.Popen(['find', d, '-type', 'f'], stdout=subprocess.PIPE)
-    for l in iter(p.stdout.readline, ''):
-        f.append(l.rstrip())
-    return f
+	f = []
+	p = subprocess.Popen(['find', d, '-type', 'f'], stdout=subprocess.PIPE)
+	for l in iter(p.stdout.readline, ''):
+		f.append(l.rstrip())
+	return f
 
 # A given a list of file paths is compared against an exclude list, with any
 # element that matches the exclude being stripped.
 def strip_excludes(E, M):
-    E_re = '(' + ')|('.join(E) + ')'
-    return [x for x in M if not(re.search(E_re, x, flags=re.IGNORECASE))]
+	E_re = '(' + ')|('.join(E) + ')'
+	return [x for x in M if not(re.search(E_re, x, flags=re.IGNORECASE))]
 
 # The cache contents are compared against a given a list of file paths to
 # messages, with any duplicate items being removed from the list. This leaves a
 # list of items that are unique to the parameter
 def strip_cached_mail(cache, M):
-    M_cache = []
-    try:
-        f = open(cache, 'r')
-        M_cache = [x.strip() for x in f.readlines()]
-        f.close
-        return [x for x in M if x not in M_cache]
-    except IOError:
-        return M
+	M_cache = []
+	try:
+		f = open(cache, 'r')
+		M_cache = [x.strip() for x in f.readlines()]
+		f.close
+		return [x for x in M if x not in M_cache]
+	except IOError:
+		return M
 
 # Cache a list of file paths to new messages
 def cache_mail_files(cache, M):
-    f = open(cache, 'w')
-    for m in M:
-        f.write(str(m) + '\n')
-    f.close()
+	f = open(cache, 'w')
+	for m in M:
+		f.write(str(m) + '\n')
+	f.close()
 
 # Perform a polling operation on the maildir and display a notification if
 # necessary
 def poll_maildir(ctx):
-    B = []
-    M = []
-    p = subprocess.Popen(['find', ctx.md, '-type', 'd',
-                          '-name', '*new'], stdout=subprocess.PIPE)
-    for l in iter(p.stdout.readline, ''):
-        B.append(l.rstrip())
-    for b in B:
-        M.extend(files_in_dir(b))
-    M = strip_excludes(ctx.excludes, M)
-    notify_new_mail(ctx, strip_cached_mail(ctx.cache, M))
-    cache_mail_files(ctx.cache, M)
+	B = []
+	M = []
+	p = subprocess.Popen(['find', ctx.md, '-type', 'd',
+						  '-name', '*new'], stdout=subprocess.PIPE)
+	for l in iter(p.stdout.readline, ''):
+		B.append(l.rstrip())
+	for b in B:
+		M.extend(files_in_dir(b))
+	M = strip_excludes(ctx.excludes, M)
+	notify_new_mail(ctx, strip_cached_mail(ctx.cache, M))
+	cache_mail_files(ctx.cache, M)
 
 # The infinite loop
 def main_loop(ctx):
-    while True:
-        debug(ctx.log, 'polling \'' + ctx.md + '\' '
-              + '(tick ' + str(ctx.jiffies) + ')')
-        poll_maildir(ctx)
-        time.sleep(ctx.poll_time)
-        ctx.jiffies += 1
+	while True:
+		debug(ctx.log, 'polling \'' + ctx.md + '\' '
+			  + '(tick ' + str(ctx.jiffies) + ')')
+		poll_maildir(ctx)
+		time.sleep(ctx.poll_time)
+		ctx.jiffies += 1
 
 def free_lock(ctx):
-    os.remove(ctx.lock)
+	os.remove(ctx.lock)
 
 def get_lock(ctx):
-    pid = get_lock_pid(ctx.lock)
+	pid = get_lock_pid(ctx.lock)
 
-    # if there is a lock, free it or fail
-    if pid != None:
-        if pid_is_active(pid):
-            fatal('unable to start pat, existing session (' + str(pid) + ')')
-        else:
-            free_lock(ctx)
+	# if there is a lock, free it or fail
+	if pid != None:
+		if pid_is_active(pid):
+			fatal('unable to start pat, existing session (' + str(pid) + ')')
+		else:
+			free_lock(ctx)
 
-    f = open(ctx.lock, 'w')
-    f.write(str(ctx.pid) + '\n')
-    f.close()
-    debug(ctx.log, 'established lock for session ' + str(ctx.pid))
+	f = open(ctx.lock, 'w')
+	f.write(str(ctx.pid) + '\n')
+	f.close()
+	debug(ctx.log, 'established lock for session ' + str(ctx.pid))
 
 def do_run():
-    ctx = get_pat_context()
+	ctx = get_pat_context()
 
-    if os.path.isdir(ctx.md) != True:
-        fatal(ctx.log, 'Maildir \'' + ctx.md + '\' does not exist')
+	if os.path.isdir(ctx.md) != True:
+		fatal(ctx.log, 'Maildir \'' + ctx.md + '\' does not exist')
 
-    get_lock(ctx)
+	get_lock(ctx)
 
-    # preserve permissions of files
-    os.chmod(ctx.cache, 0600)
-    os.chmod(ctx.log, 0600)
+	# preserve permissions of files
+	os.chmod(ctx.cache, 0600)
+	os.chmod(ctx.log, 0600)
 
-    broadcast(ctx.log, 'pat started (' + str(ctx.pid) + ')')
-    main_loop(ctx)
+	broadcast(ctx.log, 'pat started (' + str(ctx.pid) + ')')
+	main_loop(ctx)
 
 # Fork twice and kill the first two process, thus creating an orphan worker
 # process, which then executes pat
 def fork_and_orphan():
-    child_pid = os.fork()
-    if child_pid == 0:
-        daemon_pid = os.fork()
-        if daemon_pid == 0:
-            do_run()
-    sys.exit(0)
+	child_pid = os.fork()
+	if child_pid == 0:
+		daemon_pid = os.fork()
+		if daemon_pid == 0:
+			do_run()
+	sys.exit(0)
 
 def get_lock_pid(lock):
-    try:
-        f = open(lock, 'r')
-        s = f.readline()
-        f.close()
-        pid = int(s)
-        return pid
-    except (ValueError, IOError):
-        return None
+	try:
+		f = open(lock, 'r')
+		s = f.readline()
+		f.close()
+		pid = int(s)
+		return pid
+	except (ValueError, IOError):
+		return None
 
 def pid_is_active(pid):
-    ps = subprocess.Popen(['ps', 'cax'], stdout=subprocess.PIPE)
-    ps_string = ' '.join(ps.stdout.readlines())
-    if re.search(str(pid), ps_string):
-        return True
-    else:
-        return False
+	ps = subprocess.Popen(['ps', 'cax'], stdout=subprocess.PIPE)
+	ps_string = ' '.join(ps.stdout.readlines())
+	if re.search(str(pid), ps_string):
+		return True
+	else:
+		return False
 
 def do_status(ctx):
-    pid = get_lock_pid(ctx.lock)
+	pid = get_lock_pid(ctx.lock)
 
-    if pid != None:
-        if pid_is_active(pid):
-            print 'pat running (' + str(pid) + ')'
-        else:
-            print 'pat not running (dead process ' + str(pid) + ')'
-    else:
-        print 'pat not running'
+	if pid != None:
+		if pid_is_active(pid):
+			print 'pat running (' + str(pid) + ')'
+		else:
+			print 'pat not running (dead process ' + str(pid) + ')'
+	else:
+		print 'pat not running'
 
-    sys.exit(0)
+	sys.exit(0)
 
 def do_kill(ctx):
-    pid = get_lock_pid(ctx.lock)
-    ret = 1
+	pid = get_lock_pid(ctx.lock)
+	ret = 1
 
-    if pid != None:
-        if pid_is_active(pid):
-            os.kill(pid, signal.SIGTERM)
-            print 'pat closed (' + str(pid) + ')'
-            ret = 0
-        else:
-            print 'removed dormant lock (' + str(pid) + ')'
+	if pid != None:
+		if pid_is_active(pid):
+			os.kill(pid, signal.SIGTERM)
+			print 'pat closed (' + str(pid) + ')'
+			ret = 0
+		else:
+			print 'removed dormant lock (' + str(pid) + ')'
 
-        free_lock(ctx)
-    else:
-        print 'no pat session found'
+		free_lock(ctx)
+	else:
+		print 'no pat session found'
 
-    sys.exit(ret)
+	sys.exit(ret)
 
 def do_version():
-    print 'pat version @VERSION@'
-    print 'Copyright (c) 2013 Chris Cummins'
-    sys.exit(0)
+	print 'pat version @VERSION@'
+	print 'Copyright (c) 2013 Chris Cummins'
+	sys.exit(0)
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Pat is an email '
-                                     + 'notification daemon. It polls on a '
-                                     + 'local Maildir filesystem and displays '
-                                     + 'desktop notifications when new mail '
-                                     + 'has been received. Settings are made '
-                                     + 'in the ~/.patrc configuration file.')
-    parser.add_argument('-v', '--version',
-                        help='print version information and quit',
-                        action='store_true')
-    parser.add_argument('-s', '--start',
-                        help='start a pat session (default)',
-                        action='store_true')
-    parser.add_argument('-k', '--kill',
-                        help='kill an existing pat session',
-                        action='store_true')
-    parser.add_argument('-t', '--status',
-                        help='check to see if pat is running',
-                        action='store_true')
+	parser = argparse.ArgumentParser(description='Pat is an email '
+									 + 'notification daemon. It polls on a '
+									 + 'local Maildir filesystem and displays '
+									 + 'desktop notifications when new mail '
+									 + 'has been received. Settings are made '
+									 + 'in the ~/.patrc configuration file.')
+	parser.add_argument('-v', '--version',
+						help='print version information and quit',
+						action='store_true')
+	parser.add_argument('-s', '--start',
+						help='start a pat session (default)',
+						action='store_true')
+	parser.add_argument('-k', '--kill',
+						help='kill an existing pat session',
+						action='store_true')
+	parser.add_argument('-t', '--status',
+						help='check to see if pat is running',
+						action='store_true')
 
-    return parser.parse_args()
+	return parser.parse_args()
 
 if __name__ == "__main__":
-    ctx = get_pat_context ()
-    args = parse_arguments()
+	ctx = get_pat_context ()
+	args = parse_arguments()
 
-    if args.version:
-        do_version()
+	if args.version:
+		do_version()
 
-    if args.kill:
-        do_kill(ctx)
+	if args.kill:
+		do_kill(ctx)
 
-    if args.status:
-        do_status(ctx)
+	if args.status:
+		do_status(ctx)
 
-    fork_and_orphan()
+	fork_and_orphan()
