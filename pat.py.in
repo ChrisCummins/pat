@@ -41,6 +41,7 @@ class PatContext:
     # directory paths
     md = ''
     wd = ''
+    excludes = [ '' ]
 
     # file paths
     cache = ''
@@ -92,6 +93,7 @@ def get_pat_context ():
     global working_directory
     global poll_time
     global use_log
+    global excludes
 
     patrc = '@PATRC@'
 
@@ -116,6 +118,11 @@ def get_pat_context ():
         mail_directory = '~/Maildir'
 
     try:
+        excludes
+    except NameError:
+        excludes = [ '' ]
+
+    try:
         working_directory
     except NameError:
         warn('undefined working directory, using default \'~/.@PACKAGE@\'')
@@ -136,6 +143,7 @@ def get_pat_context ():
     ctx.pid = os.getpid()
     ctx.md = getpath(mail_directory)
     ctx.wd = getpath(working_directory)
+    ctx.excludes = [ctx.md + '/' + x + '/new' for x in excludes]
     ctx.cache = ctx.wd + '/cache'
     ctx.lock = ctx.wd + '/lock'
     if use_log == True:
@@ -153,6 +161,7 @@ def get_pat_context ():
     debug(ctx.log, 'forked worker process (' + str(ctx.pid) + ')')
     debug(ctx.log, 'using configuration file \'' + patrc + '\'')
     debug(ctx.log, 'mail directory: \'' + ctx.md + '\'')
+    debug(ctx.log, 'excludes: \'' + '\', \''.join(excludes) + '\'')
     debug(ctx.log, 'working directory: \'' + ctx.wd + '\'')
     debug(ctx.log, 'cache file: \'' + ctx.cache + '\'')
     debug(ctx.log, 'lock file: \'' + ctx.lock + '\'')
