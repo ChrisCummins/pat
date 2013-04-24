@@ -5,6 +5,10 @@
 # The directory containing your Maildir
 mail_directory='~/mail'
 
+# A list of directories to exclude. No notifications will be dispatched for new
+# mail in these directories
+excludes = [ '.Sent', '.Spam', '.Drafts' ]
+
 # The directory that pat places run time data in to
 working_directory='~/.pat'
 
