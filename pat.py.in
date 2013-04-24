@@ -235,6 +235,12 @@ def files_in_dir(d):
         f.append(l.rstrip())
     return f
 
+# A given a list of file paths is compared against an exclude list, with any
+# element that matches the exclude being stripped.
+def strip_excludes(E, M):
+    E_re = '(' + ')|('.join(E) + ')'
+    return [x for x in M if not(re.search(E_re, x, flags=re.IGNORECASE))]
+
 # The cache contents are compared against a given a list of file paths to
 # messages, with any duplicate items being removed from the list. This leaves a
 # list of items that are unique to the parameter
@@ -266,6 +272,7 @@ def poll_maildir(ctx):
         B.append(l.rstrip())
     for b in B:
         M.extend(files_in_dir(b))
+    M = strip_excludes(ctx.excludes, M)
     notify_new_mail(ctx, strip_cached_mail(ctx.cache, M))
     cache_mail_files(ctx.cache, M)
 
