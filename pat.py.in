@@ -50,7 +50,7 @@ class PatContext:
 
 	poll_time = 0.0
 
-# Write a message to log log file. Entries in the log file appear in the form:
+# Write a message to log file. Entries in the log file appear in the form:
 #	[yyyy-mm-dd hh:mm:ss] <message>
 def log(logp, message):
   if logp != None:
