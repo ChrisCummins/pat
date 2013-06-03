@@ -297,7 +297,7 @@ def get_lock(ctx):
 	# if there is a lock, free it or fail
 	if pid != None:
 		if pid_is_active(pid):
-			fatal('unable to start pat, existing session (' + str(pid) + ')')
+			return False;
 		else:
 			free_lock(ctx)
 
@@ -305,6 +305,7 @@ def get_lock(ctx):
 	f.write(str(ctx.pid) + '\n')
 	f.close()
 	debug(ctx.log, 'established lock for session ' + str(ctx.pid))
+	return True;
 
 def do_run():
 	ctx = get_pat_context()
@@ -312,13 +313,21 @@ def do_run():
 	if os.path.isdir(ctx.md) != True:
 		fatal(ctx.log, 'Maildir \'' + ctx.md + '\' does not exist')
 
-	get_lock(ctx)
+	lock_free = get_lock(ctx)
+
+	if lock_free != True:
+		pid = get_lock_pid(ctx.lock)
+		os.kill(pid, signal.SIGTERM)
 
 	# preserve permissions of files
 	os.chmod(ctx.cache, 0600)
 	os.chmod(ctx.log, 0600)
 
-	broadcast(ctx.log, 'pat started (' + str(ctx.pid) + ')')
+	if lock_free == True:
+		broadcast(ctx.log, 'pat started (' + str(ctx.pid) + ')')
+	else:
+		broadcast(ctx.log, 'existing pat session restarted (' + str(ctx.pid) + ')')
+
 	main_loop(ctx)
 
 # Fork twice and kill the first two process, thus creating an orphan worker
